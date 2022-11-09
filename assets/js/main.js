@@ -1,7 +1,7 @@
 const addInput = document.querySelector('#todoInput')
 const sortBtn = document.querySelector('.todo_sort_icon')
 const addBtn = document.querySelector('#todo_addBtn')
-const delTaskBtn = document.querySelector('#deteleBtn')
+const delTaskBtn = document.querySelector('#deleteBtn')
 const todoList = document.querySelector('.todo_content_list')
 
 
@@ -10,32 +10,44 @@ delTaskBtn.addEventListener('click', () => {
 })
 
 
-
 addBtn.addEventListener('click', (e) => {
     let todo = addInput.value
     todo = todo.trim()
     if (todo == '') {
-        alert('Task elave edilmeyib!')
+        alert('İnput boşdur!')
     } else {
         console.log(todo)
-        addTodo(todo)
+        addTodo(todo);
         addInput.value = ''
         deteleTodo()
     }
 })
 
 
-
 function addTodo(todo) {
-    let todoListItem = ` 
+    if (Array.isArray(todo)) {
+        todoList.innerHTML = '';
+        todo.map(element => {
+            todoList.innerHTML += `
                 <li class="todo_content_list_item">
                     <span class="todo_content_list_item_text" id="todo_content_list_item_text">
-                        ${todo}
+                        ${element.innerText}
                     </span>
                     <img class="todo_content_list_item_delete deleteListItem" src="assets/images/delete.svg" alt="delete icon">
-                </li>
-                `
-    todoList.innerHTML += todoListItem
+                </li>`;
+        })
+    } 
+    else {
+        let todoListItem = ` 
+        <li class="todo_content_list_item">
+            <span class="todo_content_list_item_text" id="todo_content_list_item_text">
+                ${todo}
+            </span>
+            <img class="todo_content_list_item_delete deleteListItem" src="assets/images/delete.svg" alt="delete icon">
+        </li>
+        `
+        todoList.innerHTML += todoListItem
+    }
 }
 
 
@@ -47,7 +59,7 @@ function deteleTodo() {
             console.log(e.target);
             if (e.target.classList.contains('deleteListItem')) {
                 li.remove()
-            } else{
+            } else {
                 alert("Silmek duymesine basin!")
             }
         })
@@ -56,20 +68,21 @@ function deteleTodo() {
 }
 
 
-sortBtn.addEventListener('click', () =>{
-    let data = []
-    let listItemText = document.querySelectorAll('#todo_content_list_item_text');
-    data.push(listItemText)
-    console.log(data);
+sortBtn.addEventListener('click', () => {
+    let listItemText = [...document.getElementsByClassName('todo_content_list_item_text')];
+    console.log(listItemText);
+    let sorted = doSort(listItemText);
+    addTodo(sorted);
+    deteleTodo()
 })
 
 
-const doSort = (todoList)=>{
-    return todoList.sort((a,b) =>{
-        if(a.innerText  > b.innerText ){
+const doSort = (todoList) => {
+    return todoList.sort((a, b) => {
+        if (a.innerText > b.innerText) {
             return 1
         }
-        if(a.innerText  < b.innerText ){
+        if (a.innerText < b.innerText) {
             return -1
         }
         return 0
